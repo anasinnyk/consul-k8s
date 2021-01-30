@@ -566,7 +566,7 @@ func TestReconcile_IgnoreStatuses(t *testing.T) {
 					Ready: false,
 				},
 				{
-					Name: "consul-connect-lifecycle-sidecar",
+					Name: "consul-connect-consul-sidecar",
 					State: corev1.ContainerState{
 						Terminated: &corev1.ContainerStateTerminated{
 							ExitCode:   2,
@@ -792,7 +792,7 @@ var unreadyAppContainers = []corev1.ContainerStatus{
 		Ready: false,
 	},
 	{
-		Name: "consul-connect-lifecycle-sidecar",
+		Name: "consul-connect-consul-sidecar",
 		State: corev1.ContainerState{
 			Waiting: &corev1.ContainerStateWaiting{
 				Reason: "PodInitializing",
