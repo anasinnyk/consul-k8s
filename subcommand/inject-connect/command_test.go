@@ -158,6 +158,26 @@ func TestRun_FlagValidation(t *testing.T) {
 				"-enable-health-checks-controller=true"},
 			expErr: "CONSUL_HTTP_ADDR is not specified",
 		},
+		{
+			flags: []string{"-consul-k8s-image", "hashicorpdev/consul-k8s:latest", "-consul-image", "foo", "-envoy-image", "envoy:1.16.0",
+				"-default-merged-metrics-port=123"},
+			expErr: "-default-merged-metrics-port value of 123 is not in the port range 1024-65353.",
+		},
+		{
+			flags: []string{"-consul-k8s-image", "hashicorpdev/consul-k8s:latest", "-consul-image", "foo", "-envoy-image", "envoy:1.16.0",
+				"-default-merged-metrics-port=foo"},
+			expErr: "-default-merged-metrics-port value of foo is not a valid integer.",
+		},
+		{
+			flags: []string{"-consul-k8s-image", "hashicorpdev/consul-k8s:latest", "-consul-image", "foo", "-envoy-image", "envoy:1.16.0",
+				"-default-prometheus-scrape-port=123"},
+			expErr: "-default-prometheus-scrape-port value of 123 is not in the port range 1024-65353.",
+		},
+		{
+			flags: []string{"-consul-k8s-image", "hashicorpdev/consul-k8s:latest", "-consul-image", "foo", "-envoy-image", "envoy:1.16.0",
+				"-default-prometheus-scrape-port=foo"},
+			expErr: "-default-prometheus-scrape-port value of foo is not a valid integer.",
+		},
 	}
 
 	for _, c := range cases {

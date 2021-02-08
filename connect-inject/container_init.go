@@ -32,10 +32,15 @@ type initContainerCommandData struct {
 	Upstreams                 []initContainerCommandUpstreamData
 	Tags                      string
 	Meta                      map[string]string
-
 	// The PEM-encoded CA certificate to use when
 	// communicating with Consul clients
-	ConsulCACert string
+	ConsulCACert             string
+	// EnableMetrics adds a listener to Envoy where Prometheus will scrape
+	// metrics from.
+	EnableMetrics            bool
+	// PrometheusScrapeListener configures the listener on Envoy where
+	// Prometheus will scrape metrics from.
+	PrometheusScrapeListener string
 }
 
 type initContainerCommandUpstreamData struct {
@@ -307,6 +312,11 @@ services {
   }
 
   proxy {
+	{{- if .MetricsEnabled }}
+	config {
+		envoy_prometheus_bind_addr = "{{ .PrometheusScrapeListener }}"
+	}
+	{{- end }}
     destination_service_name = "{{ .ServiceName }}"
     destination_service_id = "${SERVICE_ID}"
     {{- if (gt .ServicePort 0) }}

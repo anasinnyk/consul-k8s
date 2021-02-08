@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/deckarep/golang-set"
+	mapset "github.com/deckarep/golang-set"
 	"github.com/hashicorp/consul-k8s/namespaces"
 	"github.com/hashicorp/consul/api"
 	"github.com/hashicorp/go-hclog"
@@ -81,6 +81,17 @@ const (
 	annotationSidecarProxyCPURequest    = "consul.hashicorp.com/sidecar-proxy-cpu-request"
 	annotationSidecarProxyMemoryLimit   = "consul.hashicorp.com/sidecar-proxy-memory-limit"
 	annotationSidecarProxyMemoryRequest = "consul.hashicorp.com/sidecar-proxy-memory-request"
+
+	// annotations for metrics to configure where Prometheus scrapes
+	// metrics from, whether to run a merged metrics endpoint on the consul
+	// sidecar, and configure the connect service metrics.
+	annotationEnableMetrics        = "consul.hashicorp.com/enable-metrics"
+	annotationEnableMetricsMerging = "consul.hashicorp.com/enable-metrics-merging"
+	annotationMergedMetricsPort    = "consul.hashicorp.com/merged-metrics-port"
+	annotationPrometheusScrapePort = "consul.hashicorp.com/prometheus-scrape-port"
+	annotationPrometheusScrapePath = "consul.hashicorp.com/prometheus-scrape-path"
+	annotationServiceMetricsPort   = "consul.hashicorp.com/service-metrics-port"
+	annotationServiceMetricsPath   = "consul.hashicorp.com/service-metrics-path"
 
 	// annotationEnvoyExtraArgs is a space-separated list of arguments to be passed to the
 	// envoy binary. See list of args here: https://www.envoyproxy.io/docs/envoy/latest/operations/cli
@@ -182,6 +193,15 @@ type Handler struct {
 	DefaultProxyCPULimit      resource.Quantity
 	DefaultProxyMemoryRequest resource.Quantity
 	DefaultProxyMemoryLimit   resource.Quantity
+
+	// Default metrics settings. These will configure where Prometheus scrapes
+	// metrics from, and whether to run a merged metrics endpoint on the consul
+	// sidecar. These can be overridden via pod annotations.
+	DefaultEnableMetrics        bool
+	DefaultEnableMetricsMerging bool
+	DefaultMergedMetricsPort    string
+	DefaultPrometheusScrapePort string
+	DefaultPrometheusScrapePath string
 
 	// Resource settings for init container. All of these fields
 	// will be populated by the defaults provided in the initial flags.
